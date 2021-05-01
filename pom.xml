@@ -96,8 +96,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <source>6</source>
-                    <target>6</target>
+                    <source>7</source>
+                    <target>7</target>
                 </configuration>
             </plugin>
         </plugins>

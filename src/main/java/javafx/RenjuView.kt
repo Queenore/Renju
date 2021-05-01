@@ -13,19 +13,22 @@ class RenjuView : View(), BoardListener {
 
     override val root = BorderPane()
 
-    private val rows = 16;
+    private val rows = 16
 
-    private val columns = 16;
+    private val columns = 16
 
-    private val board = Board(rows, columns);
+    private val board = Board(rows, columns)
 
     private val buttons = mutableMapOf<Cage, Button>()
 
     private var inProcess = true
 
+    private var turnNumber = 0
+
     init {
         title = "Renju"
         val listener = BoardBasedCageListener(board)
+        board.createNewListener(this)
         with(root) {
             top {
                 hbox {
@@ -33,11 +36,11 @@ class RenjuView : View(), BoardListener {
                 }
             }
             center {
-                gridpane() {
+                gridpane {
                     for (row in 0..rows) {
-                        row() {
+                        row {
                             for (column in 0..columns) {
-                                val cage = Cage(column, (rows - row - 1))
+                                val cage = Cage(column, (rows - row))
                                 val button = when {
                                     (row == 0 && column == 0) -> button(graphic = ImageView("/cageTopLeft.png"))
                                     (row == 0 && column == 16) -> button(graphic = ImageView("/cageTopRight.png"))
@@ -52,10 +55,12 @@ class RenjuView : View(), BoardListener {
                                 addClass(Styles.button)
                                 button.action {
                                     if (inProcess) {
+                                        println("${cage.x} ${cage.y}")
                                         listener.cageClicked(cage)
                                     }
                                 }
-                                buttons[cage] = button
+                                if (row != 0 && row != 16 && column != 0 && column != 16)
+                                    buttons[cage] = button
                             }
                         }
                     }
@@ -67,15 +72,25 @@ class RenjuView : View(), BoardListener {
                 }
             }
         }
-
-        updateBoard()
-    }
-
-    private fun updateBoard() {
-
     }
 
     override fun turnMade(cage: Cage) {
-        TODO("Not yet implemented")
+        updateBoard(cage)
     }
+
+    private fun updateBoard(cage: Cage) {
+        if (cage.x in 1..15 && cage.y in 1..15 ) {
+            turnNumber++
+            board.updateColorMap(buttons, cage, turnNumber)
+            if (turnNumber % 2 == 1) {
+                buttons[cage]?.apply { graphic = ImageView("/cageWhite.png") }
+            } else {
+                buttons[cage]?.apply { graphic = ImageView("/cageBlack.png") }
+            }
+            if (board.winningCombo(cage)) {
+                inProcess = false
+            }
+        }
+    }
+
 }

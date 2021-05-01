@@ -13,5 +13,7 @@ public class BoardBasedCageListener implements CageListener {
     }
 
     @Override
-    public void cageClicked(@NotNull Cage cage) { }
+    public void cageClicked(@NotNull Cage cage) {
+        board.makeTurn(cage);
+    }
 }
