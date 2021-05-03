@@ -11,6 +11,8 @@ public class Board {
 
     private final int height;
 
+    public static int TO_WIN_LENGTH = 5;
+
     private final Map<Cage, CageColor> map = new HashMap<>();
 
     BoardListener listener = null;
@@ -36,6 +38,10 @@ public class Board {
         listener.turnMade(cage);
     }
 
+    public Map<Cage, CageColor> getMap() {
+        return map;
+    }
+
     public void updateColorMap(Map<Cage, Button> mapWithButtons, Cage currentCage, int turnNumber) {
         if (turnNumber == 1)
             for (Cage key : mapWithButtons.keySet())
@@ -45,32 +51,39 @@ public class Board {
         else map.put(currentCage, CageColor.BLACK);
     }
 
-    public boolean winningCombo(Cage cage) {
-        int line = 1;
+    public WinningCombo winningCombo(Cage cage) {
+        int line = 0;
+        Cage startCage = null;
+        Cage endCage = null;
         Cage plusMinusCage = new Cage(1, 1);
         for (int direction = 0; direction < 4; direction++) {
             for (int j = 0; j < 2; j++) {
-                Cage currentCage;
-                if (j == 0) currentCage = cage.plus(plusMinusCage);
-                else currentCage = cage.minus(plusMinusCage);
-                CageColor stepColor = map.get(currentCage);
-                while (stepColor == map.get(cage)) {
+                Cage currentCage = cage;
+                CageColor stepColor;
+                do {
                     line++;
-                    if (j == 0) currentCage = currentCage.plus(plusMinusCage);
-                    else currentCage = currentCage.minus(plusMinusCage);
+                    if (j == 0) {
+                        startCage = currentCage;
+                        currentCage = currentCage.plus(plusMinusCage);
+                    }
+                    else {
+                        endCage = currentCage;
+                        currentCage = currentCage.minus(plusMinusCage);
+                    }
                     stepColor = map.get(currentCage);
-                }
+                } while (stepColor == map.get(cage));
             }
-            if (line == 5) return true;
+            if (line >= TO_WIN_LENGTH + 1) {
+                return new WinningCombo(startCage, endCage, plusMinusCage);
+            }
             else {
-                line = 1;
+                line = 0;
                 if (direction == 0) plusMinusCage = new Cage(1, 0);
                 else if (direction == 1) plusMinusCage = new Cage(0, 1);
                 else plusMinusCage = new Cage(-1, 1);
             }
-
         }
-        return false;
+        return null;
     }
 
 }

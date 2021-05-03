@@ -7,8 +7,8 @@ import tornadofx.App
 class RenjuApplication : App(RenjuView::class, Styles::class) {
 
     override fun start(stage: Stage) {
-        val dialog = ChoosePlayerDialog()
-        val result = dialog.showAndWait()
+//        val dialog = ChoosePlayerDialog()
+//        val result = dialog.showAndWait()
         super.start(stage)
     }
 }

@@ -1,9 +1,7 @@
 package javafx
 
 import controller.BoardBasedCageListener
-import core.Board
-import core.BoardListener
-import core.Cage
+import core.*
 import javafx.scene.control.Button
 import javafx.scene.image.ImageView
 import javafx.scene.layout.BorderPane
@@ -24,6 +22,8 @@ class RenjuView : View(), BoardListener {
     private var inProcess = true
 
     private var turnNumber = 0
+
+    private var map = mutableMapOf<Cage, CageColor>()
 
     init {
         title = "Renju"
@@ -55,7 +55,6 @@ class RenjuView : View(), BoardListener {
                                 addClass(Styles.button)
                                 button.action {
                                     if (inProcess) {
-                                        println("${cage.x} ${cage.y}")
                                         listener.cageClicked(cage)
                                     }
                                 }
@@ -74,21 +73,44 @@ class RenjuView : View(), BoardListener {
         }
     }
 
-    override fun turnMade(cage: Cage) {
-        updateBoard(cage)
+//    fun initButton(row: Int, column: Int) = when {
+//        (row == 0 && column == 0) -> button(graphic = ImageView("/cageTopLeft.png"))
+//        (row == 0 && column == 16) -> button(graphic = ImageView("/cageTopRight.png"))
+//        (row == 16 && column == 16) -> button(graphic = ImageView("/cageBotRight.png"))
+//        (row == 16 && column == 0) -> button(graphic = ImageView("/cageBotLeft.png"))
+//        (column == 16) -> button(graphic = ImageView("/verticalRight.png"))
+//        (column == 0) -> button(graphic = ImageView("/verticalLeft.png"))
+//        (row == 16) -> button(graphic = ImageView("/horizontalBot.png"))
+//        (row == 0) -> button(graphic = ImageView("/horizontalTop.png"))
+//        else -> button(graphic = ImageView("/cage.png"))
+//    }
+
+    override fun turnMade(cage: Cage) = updateBoard(cage)
+
+    private fun initColorMap() {
+        map = board.map
     }
 
     private fun updateBoard(cage: Cage) {
-        if (cage.x in 1..15 && cage.y in 1..15 ) {
+        initColorMap()
+        if (cage.x in 1..15 && cage.y in 1..15 && map[cage] == null) {
             turnNumber++
             board.updateColorMap(buttons, cage, turnNumber)
-            if (turnNumber % 2 == 1) {
+            if (turnNumber % 2 == 1)
                 buttons[cage]?.apply { graphic = ImageView("/cageWhite.png") }
-            } else {
+            else
                 buttons[cage]?.apply { graphic = ImageView("/cageBlack.png") }
-            }
-            if (board.winningCombo(cage)) {
+            if (board.winningCombo(cage) != null) {
                 inProcess = false
+                val combo = board.winningCombo(cage)
+                var startCage = combo.startCage
+                while (startCage != combo.endCage.minus(combo.directionCage)) {
+                    if (turnNumber % 2 == 1)
+                        buttons[startCage]?.apply { graphic = ImageView("/cageSmallWhite.png") }
+                    else
+                        buttons[startCage]?.apply { graphic = ImageView("/cageSmallBlack.png") }
+                    startCage = startCage.minus(combo.directionCage)
+                }
             }
         }
     }
