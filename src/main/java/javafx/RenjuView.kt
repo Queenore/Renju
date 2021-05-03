@@ -73,18 +73,6 @@ class RenjuView : View(), BoardListener {
         }
     }
 
-//    fun initButton(row: Int, column: Int) = when {
-//        (row == 0 && column == 0) -> button(graphic = ImageView("/cageTopLeft.png"))
-//        (row == 0 && column == 16) -> button(graphic = ImageView("/cageTopRight.png"))
-//        (row == 16 && column == 16) -> button(graphic = ImageView("/cageBotRight.png"))
-//        (row == 16 && column == 0) -> button(graphic = ImageView("/cageBotLeft.png"))
-//        (column == 16) -> button(graphic = ImageView("/verticalRight.png"))
-//        (column == 0) -> button(graphic = ImageView("/verticalLeft.png"))
-//        (row == 16) -> button(graphic = ImageView("/horizontalBot.png"))
-//        (row == 0) -> button(graphic = ImageView("/horizontalTop.png"))
-//        else -> button(graphic = ImageView("/cage.png"))
-//    }
-
     override fun turnMade(cage: Cage) = updateBoard(cage)
 
     private fun initColorMap() {
@@ -101,14 +89,10 @@ class RenjuView : View(), BoardListener {
             else
                 buttons[cage]?.apply { graphic = ImageView("/cageBlack.png") }
             if (board.winningCombo(cage) != null) {
-                inProcess = false
                 val combo = board.winningCombo(cage)
                 var startCage = combo.startCage
                 while (startCage != combo.endCage.minus(combo.directionCage)) {
-                    if (turnNumber % 2 == 1)
-                        buttons[startCage]?.apply { graphic = ImageView("/cageSmallWhite.png") }
-                    else
-                        buttons[startCage]?.apply { graphic = ImageView("/cageSmallBlack.png") }
+                    buttons[startCage]?.apply { graphic = ImageView("/cageRed.png") }
                     startCage = startCage.minus(combo.directionCage)
                 }
             }
