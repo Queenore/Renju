@@ -3,6 +3,7 @@ package javafx
 import controller.BoardBasedCageListener
 import core.*
 import javafx.scene.control.Button
+import javafx.scene.control.Label
 import javafx.scene.image.ImageView
 import javafx.scene.layout.BorderPane
 import tornadofx.*
@@ -23,6 +24,8 @@ class RenjuView : View(), BoardListener {
 
     private var turnNumber = 0
 
+    private lateinit var statusLabel: Label
+
     private var map = mutableMapOf<Cage, CageColor>()
 
     init {
@@ -32,7 +35,6 @@ class RenjuView : View(), BoardListener {
         with(root) {
             top {
                 hbox {
-                    label("//////////")
                 }
             }
             center {
@@ -41,6 +43,7 @@ class RenjuView : View(), BoardListener {
                         row {
                             for (column in 0..columns) {
                                 val cage = Cage(column, (rows - row))
+//                                val button = initButton(row, column);
                                 val button = when {
                                     (row == 0 && column == 0) -> button(graphic = ImageView("/cageTopLeft.png"))
                                     (row == 0 && column == 16) -> button(graphic = ImageView("/cageTopRight.png"))
@@ -67,11 +70,23 @@ class RenjuView : View(), BoardListener {
             }
             bottom {
                 hbox {
-                    label("/////////////")
+                    statusLabel = label("white's turn")
                 }
             }
         }
     }
+
+//    fun initButton(row: Int, column: Int) = when {
+//        (row == 0 && column == 0) -> button(graphic = ImageView("/cageTopLeft.png"))
+//        (row == 0 && column == 16) -> button(graphic = ImageView("/cageTopRight.png"))
+//        (row == 16 && column == 16) -> button(graphic = ImageView("/cageBotRight.png"))
+//        (row == 16 && column == 0) -> button(graphic = ImageView("/cageBotLeft.png"))
+//        (column == 16) -> button(graphic = ImageView("/verticalRight.png"))
+//        (column == 0) -> button(graphic = ImageView("/verticalLeft.png"))
+//        (row == 16) -> button(graphic = ImageView("/horizontalBot.png"))
+//        (row == 0) -> button(graphic = ImageView("/horizontalTop.png"))
+//        else -> button(graphic = ImageView("/cage.png"))
+//    }
 
     override fun turnMade(cage: Cage) = updateBoard(cage)
 
@@ -89,6 +104,7 @@ class RenjuView : View(), BoardListener {
             else
                 buttons[cage]?.apply { graphic = ImageView("/cageBlack.png") }
             if (board.winningCombo(cage) != null) {
+                inProcess = false
                 val combo = board.winningCombo(cage)
                 var startCage = combo.startCage
                 while (startCage != combo.endCage.minus(combo.directionCage)) {
@@ -96,6 +112,12 @@ class RenjuView : View(), BoardListener {
                     startCage = startCage.minus(combo.directionCage)
                 }
             }
+        }
+        statusLabel.text = when {
+            !inProcess && turnNumber % 2 == 1 -> "the end, white won"
+            !inProcess -> "the end, black won"
+            turnNumber % 2 == 1 -> "black's turn"
+            else -> "white's turn"
         }
     }
 

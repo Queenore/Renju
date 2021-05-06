@@ -6,7 +6,7 @@ public class WinningCombo {
     private final Cage directionCage;
 
     public WinningCombo(Cage startCage, Cage endCage, Cage directionCage) {
-        this.startCage =  startCage;
+        this.startCage = startCage;
         this.endCage = endCage;
         this.directionCage = directionCage;
     }
