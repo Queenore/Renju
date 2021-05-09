@@ -22,11 +22,9 @@ class RenjuView : View(), BoardListener {
 
     private var inProcess = true
 
-    private var turnNumber = 0
+    private var turnNumber = false
 
     private lateinit var statusLabel: Label
-
-    private var map = mutableMapOf<Cage, CageColor>()
 
     init {
         title = "Renju"
@@ -43,7 +41,6 @@ class RenjuView : View(), BoardListener {
                         row {
                             for (column in 0..columns) {
                                 val cage = Cage(column, (rows - row))
-//                                val button = initButton(row, column);
                                 val button = when {
                                     (row == 0 && column == 0) -> button(graphic = ImageView("/cageTopLeft.png"))
                                     (row == 0 && column == 16) -> button(graphic = ImageView("/cageTopRight.png"))
@@ -76,30 +73,13 @@ class RenjuView : View(), BoardListener {
         }
     }
 
-//    fun initButton(row: Int, column: Int) = when {
-//        (row == 0 && column == 0) -> button(graphic = ImageView("/cageTopLeft.png"))
-//        (row == 0 && column == 16) -> button(graphic = ImageView("/cageTopRight.png"))
-//        (row == 16 && column == 16) -> button(graphic = ImageView("/cageBotRight.png"))
-//        (row == 16 && column == 0) -> button(graphic = ImageView("/cageBotLeft.png"))
-//        (column == 16) -> button(graphic = ImageView("/verticalRight.png"))
-//        (column == 0) -> button(graphic = ImageView("/verticalLeft.png"))
-//        (row == 16) -> button(graphic = ImageView("/horizontalBot.png"))
-//        (row == 0) -> button(graphic = ImageView("/horizontalTop.png"))
-//        else -> button(graphic = ImageView("/cage.png"))
-//    }
-
     override fun turnMade(cage: Cage) = updateBoard(cage)
 
-    private fun initColorMap() {
-        map = board.map
-    }
-
     private fun updateBoard(cage: Cage) {
-        initColorMap()
-        if (cage.x in 1..15 && cage.y in 1..15 && map[cage] == null) {
-            turnNumber++
-            board.updateColorMap(buttons, cage, turnNumber)
-            if (turnNumber % 2 == 1)
+        if (cage.x in 1..15 && cage.y in 1..15 && !board.set.contains(cage)) {
+            turnNumber = turnNumber == false
+            board.updateBoard(turnNumber, cage)
+            if (turnNumber)
                 buttons[cage]?.apply { graphic = ImageView("/cageWhite.png") }
             else
                 buttons[cage]?.apply { graphic = ImageView("/cageBlack.png") }
@@ -112,11 +92,13 @@ class RenjuView : View(), BoardListener {
                     startCage = startCage.minus(combo.directionCage)
                 }
             }
+
         }
         statusLabel.text = when {
-            !inProcess && turnNumber % 2 == 1 -> "the end, white won"
+            board.set.size == board.width * board.height -> "ничья"
+            !inProcess && turnNumber -> "the end, white won"
             !inProcess -> "the end, black won"
-            turnNumber % 2 == 1 -> "black's turn"
+            turnNumber -> "black's turn"
             else -> "white's turn"
         }
     }

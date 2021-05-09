@@ -19,7 +19,5 @@ public class WinningCombo {
         return endCage;
     }
 
-    public Cage getDirectionCage() {
-        return directionCage;
-    }
+    public Cage getDirectionCage() { return directionCage; }
 }

@@ -1,5 +1,5 @@
 package core;
 
 public enum CageColor {
-    WHITE, BLACK
+    WHITE, BLACK, EMPTY
 }

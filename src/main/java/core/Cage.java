@@ -6,10 +6,15 @@ public class Cage {
 
     private final int x;
     private final int y;
+    private CageColor color = CageColor.EMPTY;
 
     public Cage(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    public void setColor(CageColor color){
+        this.color = color;
     }
 
     public int getX() {
@@ -18,6 +23,7 @@ public class Cage {
     public int getY () {
         return this.y;
     }
+    public CageColor getColor() { return color; }
 
     public Cage plus(Cage cage) {
         return new Cage(x + cage.x, y + cage.y);
