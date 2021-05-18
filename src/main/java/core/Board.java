@@ -15,6 +15,8 @@ public class Board {
 
     private final Set<Cage> set = new HashSet<>();
 
+    private Cage turnCage;
+
     BoardListener listener = null;
 
     public Board(int width, int height) {
@@ -39,13 +41,14 @@ public class Board {
     }
 
     public void makeTurn(Cage cage) {
-        listener.turnMade(cage);
+        turnCage = cage;
+        listener.turn(cage);
     }
 
-    public void updateBoard(@NotNull Boolean turnNumber, Cage currentCage) {
-        if (turnNumber) currentCage.setColor(CageColor.WHITE);
-        else currentCage.setColor(CageColor.BLACK);
-        set.add(currentCage);
+    public void updateBoard(@NotNull Boolean turnNumber) {
+        if (turnNumber) turnCage.setColor(CageColor.WHITE);
+        else turnCage.setColor(CageColor.BLACK);
+        set.add(turnCage);
     }
 
     @Nullable
@@ -89,6 +92,10 @@ public class Board {
             }
         }
         return null;
+    }
+
+    public void clearBoard() {
+        set.clear();
     }
 
 }

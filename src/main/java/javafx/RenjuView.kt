@@ -24,7 +24,7 @@ class RenjuView : View(), BoardListener {
 
     private var turnNumber = false
 
-    private lateinit var statusLabel: Label
+    private lateinit var status: Label
 
     init {
         title = "Renju"
@@ -33,6 +33,15 @@ class RenjuView : View(), BoardListener {
         with(root) {
             top {
                 hbox {
+                    val reloadButton = button {
+                        text = "restart"
+                        tooltip("click to restart the game")
+                        addClass(Styles.restartButton)
+                    }
+                    addClass(Styles.top)
+                    reloadButton.action {
+                        reloadGame()
+                    }
                 }
             }
             center {
@@ -67,40 +76,54 @@ class RenjuView : View(), BoardListener {
             }
             bottom {
                 hbox {
-                    statusLabel = label("white's turn")
+                    addClass(Styles.status)
+                    status = label("white's turn")
                 }
             }
         }
     }
 
-    override fun turnMade(cage: Cage) = updateBoard(cage)
+    override fun turn(cage: Cage) = updateGame(cage)
 
-    private fun updateBoard(cage: Cage) {
+    private fun updateGame(cage: Cage) {
         if (cage.x in 1..15 && cage.y in 1..15 && !board.set.contains(cage)) {
             turnNumber = turnNumber == false
-            board.updateBoard(turnNumber, cage)
-            if (turnNumber)
-                buttons[cage]?.apply { graphic = ImageView("/cageWhite.png") }
-            else
-                buttons[cage]?.apply { graphic = ImageView("/cageBlack.png") }
+            board.updateBoard(turnNumber)
+            buttons[cage]?.apply {
+                if (turnNumber) button(graphic = ImageView("/cageWhite.png"))
+                else button(graphic = ImageView("/cageBlack.png"))
+            }
             if (board.winningCombo(cage) != null) {
                 inProcess = false
                 val combo = board.winningCombo(cage)
                 var startCage = combo.startCage
                 while (startCage != combo.endCage.minus(combo.directionCage)) {
-                    buttons[startCage]?.apply { graphic = ImageView("/cageRed.png") }
-                    startCage = startCage.minus(combo.directionCage)
+                    buttons[startCage]?.apply {
+                        button(graphic = ImageView("/cageRed.png"))
+                        startCage = startCage.minus(combo.directionCage)
+                    }
                 }
             }
-
         }
-        statusLabel.text = when {
-            board.set.size == board.width * board.height -> "ничья"
+        status.text = when {
+            board.set.size == board.height * board.width -> "draw"
             !inProcess && turnNumber -> "the end, white won"
             !inProcess -> "the end, black won"
             turnNumber -> "black's turn"
             else -> "white's turn"
         }
+        if (status.text == "draw") inProcess = false
     }
 
+    private fun reloadGame() {
+        inProcess = true
+        turnNumber = false
+        board.clearBoard()
+        for ((_, button) in buttons) {
+            button.apply {
+                button(graphic = ImageView("/cage.png"))
+            }
+        }
+        status.text = "white's turn"
+    }
 }
