@@ -33,14 +33,14 @@ class RenjuView : View(), BoardListener {
         with(root) {
             top {
                 hbox {
-                    val reloadButton = button {
+                    val restartButton = button {
                         text = "restart"
                         tooltip("click to restart the game")
                         addClass(Styles.restartButton)
                     }
                     addClass(Styles.top)
-                    reloadButton.action {
-                        reloadGame()
+                    restartButton.action {
+                        restartGame()
                     }
                 }
             }
@@ -115,7 +115,7 @@ class RenjuView : View(), BoardListener {
         if (status.text == "draw") inProcess = false
     }
 
-    private fun reloadGame() {
+    private fun restartGame() {
         inProcess = true
         turnNumber = false
         board.clearBoard()
