@@ -7,7 +7,6 @@ import tornadofx.App
 import tornadofx.setStageIcon
 
 class RenjuApplication : App(RenjuView::class, Styles::class) {
-
     override fun start(stage: Stage) {
         setStageIcon(Image("/icon.png"))
         super.start(stage)
