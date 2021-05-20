@@ -46,8 +46,7 @@ public class Board {
     }
 
     public void updateBoard(@NotNull Boolean turnNumber) {
-        if (turnNumber) turnCage.setColor(CageColor.WHITE);
-        else turnCage.setColor(CageColor.BLACK);
+        turnCage.setColor(turnNumber);
         set.add(turnCage);
     }
 
@@ -58,7 +57,6 @@ public class Board {
         return null;
     }
 
-
     public WinningCombo winningCombo(Cage cage) {
         if (!set.contains(cage)) return null;
         int line = 0;
@@ -68,7 +66,7 @@ public class Board {
         for (int direction = 0; direction < 4; direction++) {
             for (int j = 0; j < 2; j++) {
                 Cage currentCage = cage;
-                CageColor stepColor;
+                Boolean stepColor;
                 do {
                     line++;
                     if (j == 0) {

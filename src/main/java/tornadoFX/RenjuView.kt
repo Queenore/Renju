@@ -87,7 +87,7 @@ class RenjuView : View(), BoardListener {
 
     private fun updateGame(cage: Cage) {
         if (cage.x in 1..15 && cage.y in 1..15 && !board.set.contains(cage)) {
-            turnNumber = turnNumber == false
+            turnNumber = !turnNumber
             board.updateBoard(turnNumber)
             buttons[cage]?.apply {
                 if (turnNumber) button(graphic = ImageView("/cageWhite.png"))
